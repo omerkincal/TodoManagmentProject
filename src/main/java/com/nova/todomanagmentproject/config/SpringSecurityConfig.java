@@ -1,10 +1,15 @@
 package com.nova.todomanagmentproject.config;
 
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,9 +19,11 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableMethodSecurity
+@AllArgsConstructor
 public class SpringSecurityConfig {
 
-
+    private UserDetailsService userDetailsService;
     @Bean
     public static PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -37,7 +44,15 @@ public class SpringSecurityConfig {
         return httpSecurity.build();
     }
 
+
     @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    //Burada user authentication'u role göre yapmayı manuel olarak yapmıştık
+    //Bunu database authenctiation ile yapmak için bunu yorumladım
+   /* @Bean
     public UserDetailsService userDetailsService(){
         UserDetails omer = User.builder()
                 .username("omer")
@@ -52,5 +67,5 @@ public class SpringSecurityConfig {
                 .build();
 
         return new InMemoryUserDetailsManager(omer, admin);
-    }
+    } */
 }
